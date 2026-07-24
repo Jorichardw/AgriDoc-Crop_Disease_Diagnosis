@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expert Dashboard - AgriDoc</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/dashboard.css">
+    <link rel="stylesheet" href="../css/forms.css">
+    <style>
+        .expert-layout {
+            display: grid;
+            grid-template-columns: 4fr 5fr;
+            gap: 30px;
+            margin-top: 25px;
+            align-items: start;
+        }
+        .pending-list {
+            max-height: 70vh;
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+        .ticket-item-row {
+            background: white;
+            border: 1px solid #ECEFF1;
+            padding: 15px 20px;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            margin-bottom: 12px;
+            transition: all var(--transition-speed);
+            position: relative;
+        }
+        .ticket-item-row:hover {
+            border-color: var(--primary-green);
+            transform: translateX(4px);
+            box-shadow: var(--card-shadow);
+        }
+        .ticket-item-row.active {
+            border-color: var(--primary-green);
+            border-left: 5px solid var(--primary-green);
+            background-color: rgba(46, 125, 50, 0.03);
+        }
+        .ticket-item-row h4 {
+            font-size: 0.95rem;
+            color: var(--bg-dark);
+            font-weight: 600;
+        }
+        .ticket-item-row p {
+            font-size: 0.8rem;
+            color: #757575;
+            margin: 4px 0 0 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .ticket-workspace {
+            position: sticky;
+            top: 100px;
+        }
+        .workspace-placeholder {
+            text-align: center;
+            padding: 60px 40px;
+            border: 2px dashed #CFD8DC;
+            background: white;
+            border-radius: var(--border-radius);
+            color: #757575;
+        }
+        .workspace-details-photo {
+            width: 100%;
+            max-height: 220px;
+            object-fit: cover;
+            border-radius: var(--border-radius);
+            margin: 10px 0;
+            border: 1px solid #CFD8DC;
+        }
+        @media (max-width: 900px) {
+            .expert-layout {
+                grid-template-columns: 1fr;
+            }
+            .ticket-workspace {
+                position: static;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <nav class="navbar">
+            <a href="expert-dashboard.html" class="logo" style="display: flex; align-items: center; gap: 10px; text-decoration: none;">
+                <img src="../logo.png" alt="AgriDoc Logo" style="height: 34px; width: auto; border-radius: 4px;">
+                Agri<span>Doc</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="expert-dashboard.html" class="active">Expert Panel</a></li>
+                <li><a href="forum.html">Community Forum</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="container page-fade-in">
+        <div style="margin-bottom: 25px;">
+            <h1 style="color: var(--bg-dark); font-weight: 700;">🩺 Expert Advisory Workspace</h1>
+            <p style="color: #616161;">Review pending farmer consultation tickets, inspect matched symptoms/images, and write agronomist advice.</p>
+        </div>
+
+        <div class="expert-layout">
+            
+            <!-- Left Side: List of Pending Consultation Tickets -->
+            <div>
+                <section class="panel" style="margin: 0;">
+                    <div class="panel-header">
+                        <h2><span>📥</span> Open Tickets (<span id="ticket-count">0</span>)</h2>
+                    </div>
+                    <div class="pending-list" id="tickets-feed-container">
+                        <!-- Loaded dynamically -->
+                        <p style="text-align: center; color: #757575;">Loading advisory tickets...</p>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Right Side: Ticket Viewer & Advice Creator -->
+            <div class="ticket-workspace">
+                <div class="workspace-placeholder" id="workspace-empty-view">
+                    <span style="font-size: 3rem;">📥</span>
+                    <h3 style="margin-top: 15px; font-weight: 600; color: var(--bg-dark);">No Ticket Selected</h3>
+                    <p style="font-size: 0.88rem; max-width: 280px; margin: 8px auto 0 auto;">Select an active consultation ticket from the left panel to inspect details and provide recommendations.</p>
+                </div>
+
+                <section class="panel" id="workspace-active-view" style="display: none; margin: 0;">
+                    <div class="panel-header">
+                        <h2><span>🔬</span> Inspect Consultation</h2>
+                        <span class="badge badge-status-pending">PENDING</span>
+                    </div>
+
+                    <!-- Details Box -->
+                    <div style="margin-bottom: 20px;">
+                        <h3 id="ws-ticket-title" style="color: var(--primary-green); font-size: 1.15rem; font-weight: 700; margin-bottom: 5px;">...</h3>
+                        <p id="ws-ticket-meta" style="font-size: 0.8rem; color: #757575; border-bottom: 1px solid #ECEFF1; padding-bottom: 10px;"></p>
+                        
+                        <div style="margin-top: 15px; font-size: 0.88rem;">
+                            <strong style="color: var(--bg-dark);">Symptoms Submitted:</strong>
+                            <p id="ws-ticket-symptoms" style="margin: 3px 0 10px 0; background: #FAFAFA; padding: 6px 12px; border-radius: 6px; border: 1px solid #ECEFF1; font-family: monospace;"></p>
+                        </div>
+
+                        <div style="font-size: 0.88rem;">
+                            <strong style="color: var(--bg-dark);">Auto-Matcher Prediction:</strong>
+                            <p id="ws-ticket-prediction" style="margin: 3px 0 10px 0; font-weight: 500;"></p>
+                        </div>
+
+                        <div style="font-size: 0.88rem;">
+                            <strong style="color: var(--bg-dark);">Farmer Question:</strong>
+                            <blockquote id="ws-ticket-question" style="margin: 5px 0 15px 0; padding-left: 15px; border-left: 3px solid var(--secondary-green); font-style: italic; color: #37474F;"></blockquote>
+                        </div>
+                    </div>
+
+                    <!-- Crop Photo Display -->
+                    <div style="text-align: center; margin-bottom: 20px;" id="ws-photo-box">
+                        <strong style="display: block; text-align: left; font-size: 0.88rem; color: var(--bg-dark); margin-bottom: 5px;">Uploaded Photo:</strong>
+                        <img class="workspace-details-photo" id="ws-photo" src="" alt="Farmer Crop Photo" onerror="this.style.display='none'">
+                    </div>
+
+                    <!-- Response Form -->
+                    <form id="expert-response-form" style="border-top: 1px solid #ECEFF1; padding-top: 20px;">
+                        <div class="form-group">
+                            <label for="response-text" style="font-size: 0.95rem; color: var(--bg-dark);">Write Professional Agronomy Advice</label>
+                            <p style="font-size: 0.78rem; color: #757575; margin-bottom: 10px;">Provide recommended chemical controls, cultural practices, or validation of the disease prediction:</p>
+                            <textarea id="response-text" class="form-control" placeholder="Enter your response, dosage instructions, or steps to take..." style="min-height: 120px;" required></textarea>
+                        </div>
+                        
+                        <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                            <button type="button" class="btn btn-secondary" style="background: none; border: 1px solid #CFD8DC; color: #555;" onclick="deselectTicket()">
+                                Close
+                            </button>
+                            <button type="submit" class="btn btn-primary">
+                                Send Advisory Response ✉️
+                            </button>
+                        </div>
+                    </form>
+                </section>
+            </div>
+
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 AgriDoc Platform. Built with care for agricultural sustainability.</p>
+    </footer>
+
+    <script src="../js/api.js?v=2"></script>
+    <script src="../js/auth.js"></script>
+    <script>
+        let pendingTickets = [];
+        let selectedTicket = null;
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            loadTickets();
+        });
+
+        async function loadTickets() {
+            try {
+                const tickets = await api.getExpertPendingConsultations();
+                pendingTickets = tickets;
+                
+                document.getElementById('ticket-count').textContent = tickets.length;
+                renderTicketsFeed(tickets);
+            } catch (err) {
+                console.error('Failed to load expert tickets:', err);
+            }
+        }
+
+        function renderTicketsFeed(tickets) {
+            const container = document.getElementById('tickets-feed-container');
+            if (!container) return;
+
+            if (!tickets || tickets.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 40px; color: #757575; font-size: 0.9rem;">
+                        🎉 All caught up! No pending consultations.
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = tickets.map(ticket => {
+                const isSelected = selectedTicket && selectedTicket.id === ticket.id;
+                const formattedDate = new Date(ticket.createdAt).toLocaleDateString('en-US', {
+                    month: 'short', day: 'numeric'
+                });
+
+                return `
+                    <div class="ticket-item-row ${isSelected ? 'active' : ''}" onclick="selectTicket(${ticket.id})">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <h4>Ticket #${ticket.id} - ${ticket.report.crop.name}</h4>
+                            <span style="font-size: 0.72rem; color: #9E9E9E;">${formattedDate}</span>
+                        </div>
+                        <p>👤 Farmer: ${ticket.farmer.fullName} (${ticket.farmer.region})</p>
+                        <p style="font-style: italic; color: #455A64;">💬 "${ticket.question}"</p>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function selectTicket(id) {
+            const ticket = pendingTickets.find(t => t.id === id);
+            if (!ticket) return;
+
+            selectedTicket = ticket;
+            
+            // Re-render feed to apply active selection classes
+            renderTicketsFeed(pendingTickets);
+
+            // Toggle panels
+            document.getElementById('workspace-empty-view').style.display = 'none';
+            const activeView = document.getElementById('workspace-active-view');
+            activeView.style.display = 'block';
+
+            // Populate active details
+            document.getElementById('ws-ticket-title').textContent = `${ticket.report.crop.name} - Ticket #${ticket.id}`;
+            document.getElementById('ws-ticket-meta').innerHTML = `
+                👤 Farmer: <strong>${ticket.farmer.fullName}</strong> | Region: <strong>${ticket.farmer.region}</strong> | Phone: <strong>${ticket.farmer.phone}</strong>
+            `;
+
+            document.getElementById('ws-ticket-symptoms').textContent = ticket.report.symptomsSubmitted;
+
+            const predName = ticket.report.predictedDiseaseName || 'Unknown / Undiagnosed Condition';
+            const predSeverity = ticket.report.severityLevel || 'LOW';
+            document.getElementById('ws-ticket-prediction').innerHTML = `
+                <span class="badge badge-severity-${predSeverity.toLowerCase()}">${predSeverity}</span> <strong>${predName}</strong>
+            `;
+
+            document.getElementById('ws-ticket-question').textContent = `"${ticket.question}"`;
+
+            // Photo rendering
+            const photoImg = document.getElementById('ws-photo');
+            const photoBox = document.getElementById('ws-photo-box');
+            if (ticket.report.imagePath) {
+                photoBox.style.display = 'block';
+                photoImg.src = ticket.report.imagePath.startsWith('data:') ? ticket.report.imagePath : `http://localhost:8080/${ticket.report.imagePath}`;
+                photoImg.style.display = 'block';
+            } else {
+                photoBox.style.display = 'none';
+                photoImg.src = '';
+            }
+
+            // Clear textarea
+            document.getElementById('response-text').value = '';
+        }
+
+        function deselectTicket() {
+            selectedTicket = null;
+            document.getElementById('workspace-active-view').style.display = 'none';
+            document.getElementById('workspace-empty-view').style.display = 'block';
+            renderTicketsFeed(pendingTickets);
+        }
+
+        // Handle Response submission
+        document.getElementById('expert-response-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            if (!selectedTicket) return;
+
+            const responseText = document.getElementById('response-text').value.trim();
+
+            if (!responseText) {
+                showAlert('Please write a valid response', 'warning');
+                return;
+            }
+
+            try {
+                const response = await api.respondToConsultation(selectedTicket.id, responseText);
+                if (response) {
+                    showAlert('Response submitted successfully. Ticket resolved!', 'success');
+                    selectedTicket = null;
+                    
+                    // Reset viewer panels
+                    deselectTicket();
+                    
+                    // Reload tickets list
+                    loadTickets();
+                }
+            } catch (err) {
+                // api.js handles alerting
+            }
+        });
+    </script>
+</body>
+</html>

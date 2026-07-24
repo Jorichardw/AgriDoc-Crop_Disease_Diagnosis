@@ -1,0 +1,361 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Poppins:wght@300;400;500;600;700&display=swap');
+
+:root {
+    --primary-green: #2E7D32;
+    --secondary-green: #4CAF50;
+    --accent-green: #81C784;
+    --accent-yellow: #FFB300;
+    --bg-light: #F4F8F4;
+    --bg-dark: #0D2310;
+    --text-dark: #1E2920;
+    --text-light: #FFFFFF;
+    --severity-high: #D32F2F;
+    --severity-medium: #F57C00;
+    --severity-low: #388E3C;
+    
+    --card-shadow: 0 4px 20px rgba(13, 35, 16, 0.04);
+    --card-hover-shadow: 0 12px 30px rgba(46, 125, 50, 0.12);
+    --border-radius: 16px;
+    --transition-speed: 0.25s;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Custom organic themed scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+::-webkit-scrollbar-track {
+    background: var(--bg-light);
+}
+::-webkit-scrollbar-thumb {
+    background: var(--accent-green);
+    border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: var(--primary-green);
+}
+
+body {
+    font-family: 'Outfit', 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--bg-light);
+    background-image: 
+        radial-gradient(rgba(76, 175, 80, 0.04) 1.5px, transparent 1.5px),
+        radial-gradient(rgba(76, 175, 80, 0.04) 1.5px, transparent 1.5px);
+    background-size: 24px 24px;
+    background-position: 0 0, 12px 12px;
+    color: var(--text-dark);
+    line-height: 1.6;
+    overflow-x: hidden;
+}
+
+/* Glassmorphism Panels and Cards */
+.panel, .auth-card {
+    background: rgba(255, 255, 255, 0.95) !important;
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(76, 175, 80, 0.12) !important;
+    border-radius: var(--border-radius);
+    box-shadow: var(--card-shadow);
+    transition: all var(--transition-speed) ease !important;
+}
+
+.panel:hover, .auth-card:hover {
+    box-shadow: 0 8px 25px rgba(13, 35, 16, 0.06);
+    border-color: rgba(76, 175, 80, 0.25) !important;
+}
+
+/* Page Slide In / Fade In */
+.page-fade-in {
+    animation: fadeInUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(15px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Header & Navbar Styles */
+header {
+    background-color: var(--bg-dark);
+    color: var(--text-light);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    animation: slideDown 0.5s ease forwards;
+}
+
+@keyframes slideDown {
+    from {
+        transform: translateY(-100%);
+    }
+    to {
+        transform: translateY(0);
+    }
+}
+
+.navbar {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    color: var(--text-light);
+    text-decoration: none;
+}
+
+.logo span {
+    color: var(--secondary-green);
+}
+
+.nav-links {
+    display: flex;
+    align-items: center;
+    list-style: none;
+    gap: 20px;
+}
+
+.nav-links a {
+    color: var(--text-light);
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.95rem;
+    padding: 6px 12px;
+    border-radius: 8px;
+    transition: all var(--transition-speed);
+}
+
+.nav-links a:hover, .nav-links a.active {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: var(--secondary-green);
+}
+
+.nav-links .btn-logout {
+    background-color: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: var(--text-light);
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 0.9rem;
+    padding: 6px 15px;
+    border-radius: 8px;
+    transition: all var(--transition-speed);
+}
+
+.nav-links .btn-logout:hover {
+    background-color: var(--severity-high);
+    border-color: var(--severity-high);
+    color: var(--text-light);
+}
+
+/* General Layout & Containers */
+.container {
+    max-width: 1200px;
+    margin: 30px auto;
+    padding: 0 20px;
+}
+
+/* Footer styling */
+footer {
+    background-color: var(--bg-dark);
+    color: rgba(255, 255, 255, 0.7);
+    text-align: center;
+    padding: 20px;
+    margin-top: 50px;
+    border-top: 3px solid var(--primary-green);
+}
+
+/* Leaf Loading Spinner */
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(255, 255, 255, 0.85);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+.loading-overlay.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.leaf-loader {
+    width: 60px;
+    height: 60px;
+    background-color: var(--primary-green);
+    border-radius: 50px 0 50px 0;
+    animation: rotateLeaf 1.8s ease-in-out infinite;
+    box-shadow: 0 4px 10px rgba(46, 125, 50, 0.3);
+}
+
+@keyframes rotateLeaf {
+    0% {
+        transform: rotate(0deg) scale(0.8);
+        border-radius: 50px 0 50px 0;
+    }
+    50% {
+        transform: rotate(180deg) scale(1.1);
+        background-color: var(--secondary-green);
+        border-radius: 0 50px 0 50px;
+    }
+    100% {
+        transform: rotate(360deg) scale(0.8);
+        border-radius: 50px 0 50px 0;
+    }
+}
+
+.loading-text {
+    margin-top: 15px;
+    font-weight: 600;
+    color: var(--primary-green);
+    font-size: 1.1rem;
+}
+
+/* Alert Notification Banners */
+.alert-banner {
+    position: fixed;
+    top: 85px;
+    right: 20px;
+    padding: 15px 25px;
+    border-radius: var(--border-radius);
+    color: white;
+    font-weight: 500;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+    z-index: 200;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    transform: translateX(120%);
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.alert-banner.show {
+    transform: translateX(0);
+}
+
+.alert-banner.success {
+    background-color: var(--primary-green);
+}
+
+.alert-banner.danger {
+    background-color: var(--severity-high);
+}
+
+.alert-banner.warning {
+    background-color: var(--severity-medium);
+}
+
+/* Buttons */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 22px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    border-radius: var(--border-radius);
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    text-decoration: none;
+}
+
+.btn-primary {
+    background-color: var(--primary-green);
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: #246328;
+    transform: scale(1.03);
+    box-shadow: 0 4px 10px rgba(46, 125, 50, 0.3);
+}
+
+.btn-secondary {
+    background-color: var(--secondary-green);
+    color: white;
+}
+
+.btn-secondary:hover {
+    background-color: #559e59;
+    transform: scale(1.03);
+    box-shadow: 0 4px 10px rgba(102, 187, 106, 0.3);
+}
+
+.btn-accent {
+    background-color: var(--accent-yellow);
+    color: var(--text-dark);
+}
+
+.btn-accent:hover {
+    background-color: #e59918;
+    transform: scale(1.03);
+    box-shadow: 0 4px 10px rgba(249, 168, 37, 0.3);
+}
+
+.btn-danger {
+    background-color: var(--severity-high);
+    color: white;
+}
+
+.btn-danger:hover {
+    background-color: #ab2222;
+    transform: scale(1.03);
+    box-shadow: 0 4px 10px rgba(198, 40, 40, 0.3);
+}
+
+.btn:active {
+    transform: scale(0.98);
+}
+
+/* Symptom Quick Tags */
+.symptom-tag {
+    background-color: #ECEFF1;
+    border: 1px solid #CFD8DC;
+    color: var(--text-dark);
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 0.82rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    outline: none;
+}
+.symptom-tag:hover {
+    background-color: rgba(76, 175, 80, 0.1);
+    border-color: var(--secondary-green);
+    color: var(--primary-green);
+    transform: translateY(-1px);
+}

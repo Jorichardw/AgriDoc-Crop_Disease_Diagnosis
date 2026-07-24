@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - AgriDoc</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/forms.css">
+</head>
+<body>
+    <main class="auth-wrapper page-fade-in">
+        <div class="auth-card" style="max-width: 600px;">
+            <div style="display: flex; justify-content: center; margin-bottom: 20px;">
+                <a href="../index.html" style="display: flex; align-items: center; gap: 10px; text-decoration: none; font-size: 1.8rem; font-weight: 700; color: var(--bg-dark);">
+                    <img src="../logo.png" alt="AgriDoc Logo" style="height: 38px; width: auto; border-radius: 4px;">
+                    Agri<span style="color: var(--primary-green);">Doc</span>
+                </a>
+            </div>
+            <h2>Create Account</h2>
+            <p class="subtitle">Join AgriDoc to diagnose crops and get advice</p>
+            
+            <form id="register-form">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+                    <div class="form-group" style="margin: 0;">
+                        <label for="username">Username</label>
+                        <input type="text" id="username" class="form-control" placeholder="Enter username" required autocomplete="username">
+                    </div>
+                    
+                    <div class="form-group" style="margin: 0;">
+                        <label for="fullName">Full Name</label>
+                        <input type="text" id="fullName" class="form-control" placeholder="Enter full name" required autocomplete="name">
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+                    <div class="form-group" style="margin: 0;">
+                        <label for="email">Email Address</label>
+                        <input type="email" id="email" class="form-control" placeholder="Enter email" required autocomplete="email">
+                    </div>
+                    
+                    <div class="form-group" style="margin: 0;">
+                        <label for="phone">Phone Number</label>
+                        <input type="tel" id="phone" class="form-control" placeholder="e.g. +123456789" required autocomplete="tel">
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+                    <div class="form-group" style="margin: 0;">
+                        <label for="region">Region</label>
+                        <input type="text" id="region" class="form-control" placeholder="e.g. Northern Valley" required>
+                    </div>
+                    
+                    <div class="form-group" style="margin: 0;">
+                        <label for="role">Account Role</label>
+                        <select id="role" class="form-control" required>
+                            <option value="FARMER">Farmer (Diagnose & Ask Experts)</option>
+                            <option value="EXPERT">Expert Advisor (Review Reports & Consult)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" class="form-control" placeholder="Create strong password" required autocomplete="new-password">
+                </div>
+
+                <div class="form-group">
+                    <label for="confirmPassword">Confirm Password</label>
+                    <input type="password" id="confirmPassword" class="form-control" placeholder="Confirm your password" required autocomplete="new-password">
+                </div>
+                
+                <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 15px;">
+                    Register Now 🎉
+                </button>
+            </form>
+            
+            <div class="auth-footer">
+                Already have an account? <a href="../index.html">Sign In here</a>
+            </div>
+        </div>
+    </main>
+
+    <script src="../js/api.js?v=2"></script>
+    <script src="../js/auth.js"></script>
+    <script>
+        document.getElementById('register-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value.trim();
+            const fullName = document.getElementById('fullName').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const phone = document.getElementById('phone').value.trim();
+            const region = document.getElementById('region').value.trim();
+            const role = document.getElementById('role').value;
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+
+            // Form validations
+            if (password !== confirmPassword) {
+                showAlert('Passwords do not match', 'danger');
+                return;
+            }
+
+            if (password.length < 6) {
+                showAlert('Password must be at least 6 characters long', 'danger');
+                return;
+            }
+
+            try {
+                const response = await api.register(fullName, username, email, password, phone, region, role);
+                if (response) {
+                    showAlert('Account created successfully! Redirecting to login...', 'success');
+                    setTimeout(() => {
+                        window.location.href = '../index.html';
+                    }, 1500);
+                }
+            } catch (err) {
+                showAlert(err.message, 'danger');
+            }
+        });
+    </script>
+</body>
+</html>

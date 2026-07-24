@@ -1,0 +1,228 @@
+/* Centered Auth Card layouts */
+.auth-wrapper {
+    min-height: 80vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px 0;
+}
+
+.auth-card {
+    background: white;
+    width: 100%;
+    max-width: 480px;
+    padding: 40px;
+    border-radius: var(--border-radius);
+    border: 1px solid rgba(76, 175, 80, 0.12) !important;
+    box-shadow: 0 12px 35px rgba(13, 35, 16, 0.05) !important;
+    border-top: 5px solid var(--primary-green) !important;
+    animation: fadeInUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.auth-card h2 {
+    text-align: center;
+    margin-bottom: 8px;
+    color: var(--bg-dark);
+    font-size: 1.8rem;
+    font-weight: 800;
+    font-family: 'Outfit', sans-serif;
+}
+
+.auth-card p.subtitle {
+    text-align: center;
+    color: #555856;
+    font-size: 0.9rem;
+    margin-bottom: 30px;
+}
+
+/* Form Controls */
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--text-dark);
+    margin-bottom: 8px;
+}
+
+.form-control {
+    width: 100%;
+    padding: 12px 16px;
+    font-size: 0.92rem;
+    border-radius: var(--border-radius);
+    border: 1px solid #CFD8DC;
+    background-color: #F8FAF8;
+    font-family: inherit;
+    transition: all var(--transition-speed);
+}
+
+.form-control:focus {
+    outline: none;
+    background-color: white;
+    border-color: var(--secondary-green);
+    box-shadow: 0 0 0 4px rgba(76, 175, 80, 0.12);
+}
+
+textarea.form-control {
+    resize: vertical;
+    min-height: 100px;
+}
+
+/* Auth Footer */
+.auth-footer {
+    text-align: center;
+    margin-top: 25px;
+    font-size: 0.88rem;
+    color: #616161;
+}
+
+.auth-footer a {
+    color: var(--primary-green);
+    text-decoration: none;
+    font-weight: 600;
+    transition: color var(--transition-speed);
+}
+
+.auth-footer a:hover {
+    color: var(--secondary-green);
+    text-decoration: underline;
+}
+
+/* Symptom Checkbox Selection Layout */
+.symptoms-selector-container {
+    background: #FAFAFA;
+    border: 1px solid #ECEFF1;
+    border-radius: var(--border-radius);
+    padding: 20px;
+    margin-bottom: 25px;
+}
+
+.symptoms-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 12px;
+    margin-top: 15px;
+}
+
+.symptom-checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: white;
+    padding: 10px 15px;
+    border-radius: 8px;
+    border: 1px solid #E0E0E0;
+    cursor: pointer;
+    font-size: 0.88rem;
+    -webkit-user-select: none;
+    user-select: none;
+    transition: all var(--transition-speed);
+}
+
+.symptom-checkbox-label:hover {
+    border-color: var(--secondary-green);
+    background-color: rgba(102, 187, 106, 0.05);
+}
+
+.symptom-checkbox-label input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    accent-color: var(--primary-green);
+}
+
+.symptom-checkbox-label.selected {
+    border-color: var(--primary-green);
+    background-color: rgba(46, 125, 50, 0.08);
+    font-weight: 500;
+}
+
+/* Drag and Drop File Upload Container */
+.upload-drag-area {
+    border: 2px dashed #CFD8DC;
+    background-color: #FAFAFA;
+    border-radius: var(--border-radius);
+    padding: 30px 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: all var(--transition-speed);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 25px;
+}
+
+.upload-drag-area:hover, .upload-drag-area.drag-over {
+    border-color: var(--primary-green);
+    background-color: rgba(46, 125, 50, 0.04);
+}
+
+.upload-icon {
+    font-size: 2.5rem;
+    color: var(--primary-green);
+}
+
+.upload-drag-area p {
+    font-size: 0.88rem;
+    color: #616161;
+}
+
+.upload-drag-area .hint {
+    font-size: 0.75rem;
+    color: #9E9E9E;
+}
+
+#file-input {
+    display: none;
+}
+
+.file-preview {
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: white;
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: 1px solid #ECEFF1;
+    max-width: 100%;
+}
+
+.file-preview img {
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+    border-radius: 6px;
+}
+
+.file-preview .file-info {
+    text-align: left;
+    overflow: hidden;
+}
+
+.file-preview .file-name {
+    font-size: 0.8rem;
+    font-weight: 600;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    max-width: 180px;
+}
+
+.file-preview .file-size {
+    font-size: 0.7rem;
+    color: #757575;
+}
+
+.file-preview .btn-remove-file {
+    background: none;
+    border: none;
+    color: var(--severity-high);
+    cursor: pointer;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+}

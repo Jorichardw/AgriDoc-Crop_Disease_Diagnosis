@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Community Forum - AgriDoc</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/dashboard.css">
+    <link rel="stylesheet" href="../css/forms.css">
+    <style>
+        .forum-layout {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+            align-items: start;
+        }
+        @media (max-width: 900px) {
+            .forum-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <nav class="navbar">
+            <a href="#" id="navbar-logo" class="logo" style="display: flex; align-items: center; gap: 10px; text-decoration: none;">
+                <img src="../logo.png" alt="AgriDoc Logo" style="height: 34px; width: auto; border-radius: 4px;">
+                Agri<span>Doc</span>
+            </a>
+            <ul class="nav-links" id="navbar-links-container">
+                <!-- Dynamically populated based on active user role -->
+            </ul>
+        </nav>
+    </header>
+
+    <main class="container page-fade-in">
+        <div style="margin-bottom: 25px;">
+            <h1 style="color: var(--bg-dark); font-weight: 700;">💬 Community Discussion Forum</h1>
+            <p style="color: #616161;">Discuss crop management techniques, share warnings on local outbreaks, and ask general farming questions.</p>
+        </div>
+
+        <div class="forum-layout">
+            
+            <!-- Left Side: Discussion Feed -->
+            <div id="forum-feed-container">
+                <p style="text-align: center; color: #757575;">Loading community posts...</p>
+            </div>
+
+            <!-- Right Side: Write new thread -->
+            <div>
+                <section class="panel" style="position: sticky; top: 100px; margin: 0;">
+                    <div class="panel-header">
+                        <h2><span>📝</span> Publish New Topic</h2>
+                    </div>
+                    <form id="new-thread-form">
+                        <div class="form-group">
+                            <label for="thread-title">Topic Title</label>
+                            <input type="text" id="thread-title" class="form-control" placeholder="Summarize your topic (e.g. Potato Early Blight alert)" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="thread-content">Description / Question</label>
+                            <textarea id="thread-content" class="form-control" placeholder="Write the details of your inquiry or share your experience with the community..." style="min-height: 150px;" required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 10px;">
+                            Post to Forum 🚀
+                        </button>
+                    </form>
+                </section>
+            </div>
+
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 AgriDoc Platform. Built with care for agricultural sustainability.</p>
+    </footer>
+
+    <script src="../js/api.js?v=2"></script>
+    <script src="../js/auth.js"></script>
+    <script>
+        // Setup navbar links dynamically based on user role BEFORE forum.js runs
+        const userProfile = api.getCurrentUser();
+        if (userProfile) {
+            const logoEl = document.getElementById('navbar-logo');
+            const linksContainer = document.getElementById('navbar-links-container');
+            
+            let linksHtml = '';
+            if (userProfile.role === 'ADMIN') {
+                logoEl.href = 'admin-dashboard.html';
+                linksHtml = `
+                    <li><a href="admin-dashboard.html">Admin Panel</a></li>
+                    <li><a href="forum.html" class="active">Community Forum</a></li>
+                `;
+            } else if (userProfile.role === 'EXPERT') {
+                logoEl.href = 'expert-dashboard.html';
+                linksHtml = `
+                    <li><a href="expert-dashboard.html">Expert Panel</a></li>
+                    <li><a href="forum.html" class="active">Community Forum</a></li>
+                `;
+            } else {
+                logoEl.href = 'farmer-dashboard.html';
+                linksHtml = `
+                    <li><a href="farmer-dashboard.html">Dashboard</a></li>
+                    <li><a href="report-history.html">Report History</a></li>
+                    <li><a href="forum.html" class="active">Community Forum</a></li>
+                `;
+            }
+            linksContainer.innerHTML = linksHtml;
+        }
+    </script>
+    <script src="../js/forum.js"></script>
+</body>
+</html>

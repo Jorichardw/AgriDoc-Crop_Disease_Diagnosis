@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diagnosis Result - AgriDoc</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/dashboard.css">
+    <link rel="stylesheet" href="../css/forms.css">
+    <style>
+        .result-container {
+            display: grid;
+            grid-template-columns: 7fr 5fr;
+            gap: 30px;
+            margin-top: 20px;
+        }
+        .disease-detail-header {
+            background-color: var(--bg-dark);
+            color: white;
+            padding: 30px;
+            border-radius: var(--border-radius);
+            margin-bottom: 25px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: var(--card-shadow);
+            border: 1px solid rgba(76, 175, 80, 0.2);
+        }
+        .disease-detail-header::before {
+            content: "🌱";
+            position: absolute;
+            right: -10px;
+            bottom: -20px;
+            font-size: 8rem;
+            opacity: 0.1;
+        }
+        .result-photo {
+            width: 100%;
+            max-height: 300px;
+            object-fit: cover;
+            border-radius: var(--border-radius);
+            border: 1px solid rgba(76, 175, 80, 0.25);
+            box-shadow: var(--card-shadow);
+        }
+        .info-row {
+            display: flex;
+            margin-bottom: 12px;
+            border-bottom: 1px solid #ECEFF1;
+            padding-bottom: 8px;
+        }
+        .info-label {
+            font-weight: 600;
+            width: 160px;
+            color: var(--bg-dark);
+        }
+        .info-value {
+            flex: 1;
+        }
+        .translation-block {
+            margin-top: 4px;
+            font-size: 0.85rem;
+            color: var(--primary-green);
+            font-weight: 600;
+            line-height: 1.4;
+            border-left: 2px solid var(--accent-green);
+            padding-left: 10px;
+            margin-bottom: 10px;
+        }
+        .section-sub-header {
+            font-size: 0.98rem;
+            font-weight: 700;
+            color: var(--bg-dark);
+            margin-top: 15px;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .diagnostic-card {
+            margin-bottom: 20px;
+            padding: 20px;
+            border-radius: var(--border-radius);
+        }
+        @media (max-width: 1024px) {
+            .result-container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <nav class="navbar">
+            <a href="farmer-dashboard.html" class="logo" style="display: flex; align-items: center; gap: 10px; text-decoration: none;">
+                <img src="../logo.png" alt="AgriDoc Logo" style="height: 34px; width: auto; border-radius: 4px;">
+                Agri<span>Doc</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="farmer-dashboard.html">Dashboard</a></li>
+                <li><a href="report-history.html" class="active">Report History</a></li>
+                <li><a href="forum.html">Community Forum</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="container page-fade-in">
+        <div style="margin-bottom: 25px;">
+            <a href="farmer-dashboard.html" style="text-decoration: none; color: var(--primary-green); font-weight: 600; display: inline-flex; align-items: center; gap: 5px; margin-bottom: 15px;">
+                ⬅ Back to Dashboard
+            </a>
+            <h1 style="color: var(--bg-dark); font-weight: 700;">🔬 Diagnostic Findings & Pathology Solution</h1>
+            <p style="color: #616161;">Review matched disease severity, root causes (எது நால நோய் வருது), recommended solutions (பண்ணினா சரியாகும்), and recovery duration (எவ்வளவு நாட்களில் சரியாகும்) in English & Tamil.</p>
+            
+            <!-- Language Mode Selector -->
+            <div style="display: flex; align-items: center; gap: 10px; margin-top: 15px; margin-bottom: 20px;">
+                <span style="font-weight: 600; font-size: 0.9rem; color: var(--bg-dark);">🌐 Display Language / மொழி தேர்வு:</span>
+                <button type="button" id="lang-btn-both" class="btn active-lang-btn" onclick="setLanguageMode('both')" style="padding: 6px 14px; font-size: 0.85rem; border-radius: 20px; border: 1px solid var(--primary-green); background: var(--primary-green); color: white; cursor: pointer;">Both (English & தமிழ்)</button>
+                <button type="button" id="lang-btn-en" class="btn" onclick="setLanguageMode('en')" style="padding: 6px 14px; font-size: 0.85rem; border-radius: 20px; border: 1px solid #CFD8DC; background: #ECEFF1; color: var(--text-dark); cursor: pointer;">English Only</button>
+                <button type="button" id="lang-btn-ta" class="btn" onclick="setLanguageMode('ta')" style="padding: 6px 14px; font-size: 0.85rem; border-radius: 20px; border: 1px solid #CFD8DC; background: #ECEFF1; color: var(--text-dark); cursor: pointer;">தமிழ் மட்டும்</button>
+            </div>
+        </div>
+
+        <div class="result-container">
+            
+            <!-- Left Panel: Diagnosis details -->
+            <div style="display: flex; flex-direction: column;">
+                
+                <!-- Main Header Title -->
+                <div class="disease-detail-header" id="disease-header">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 10px; margin-bottom: 10px;">
+                        <span class="badge" id="predicted-severity-badge">Severity: Loading...</span>
+                        <span class="badge" id="predicted-confidence-badge" style="background-color: #E0F2F1; color: #00796B; border: 1px solid #B2DFDB;">Confidence: Loading...</span>
+                    </div>
+                    <h2 style="font-size: 2.1rem; font-weight: 800; margin-bottom: 8px; font-family: 'Outfit';" id="predicted-disease-name">Analyzing symptoms...</h2>
+                    <p style="margin: 0; opacity: 0.9; font-weight: 500;" id="predicted-crop-relation">Crop: ...</p>
+                </div>
+
+                <!-- 1. Pathology Details -->
+                <section class="panel diagnostic-card">
+                    <div class="panel-header" style="margin-bottom: 15px; border-bottom: 1px solid rgba(76, 175, 80, 0.12); padding-bottom: 10px;">
+                        <h2 style="font-size: 1.15rem; font-weight: 700; color: var(--primary-green);"><span>🧬</span> Pathology Analysis</h2>
+                    </div>
+                    
+                    <div class="section-sub-header">Observed Symptoms / அறிகுறிகள்:</div>
+                    <div id="ai-symptoms" style="margin-bottom: 15px;">...</div>
+
+                    <div class="section-sub-header">Root Cause / மூல காரணம்:</div>
+                    <div id="ai-root-cause" style="margin-bottom: 15px;">...</div>
+
+                    <div class="section-sub-header">Expected Recovery Time / மீட்பு காலம்:</div>
+                    <div id="ai-recovery-time" style="margin-bottom: 15px;">...</div>
+                </section>
+
+                <!-- 2. Treatment & Actions -->
+                <section class="panel diagnostic-card">
+                    <div class="panel-header" style="margin-bottom: 15px; border-bottom: 1px solid rgba(76, 175, 80, 0.12); padding-bottom: 10px;">
+                        <h2 style="font-size: 1.15rem; font-weight: 700; color: var(--primary-green);"><span>🩹</span> Treatment & Action Plan</h2>
+                    </div>
+
+                    <div class="section-sub-header">Immediate Actions / உடனடி நடவடிக்கைகள்:</div>
+                    <div id="ai-immediate-actions" style="margin-bottom: 15px;">...</div>
+
+                    <div class="section-sub-header">Recommended Treatment / பரிந்துரைக்கப்பட்ட சிகிச்சை:</div>
+                    <div id="ai-recommended-treatment" style="margin-bottom: 15px;">...</div>
+
+                    <div class="section-sub-header">Prevention Methods / தடுப்பு முறைகள்:</div>
+                    <div id="ai-prevention-methods" style="margin-bottom: 15px;">...</div>
+                </section>
+
+                <!-- 3. Agronomy & Extra Advice -->
+                <section class="panel diagnostic-card">
+                    <div class="panel-header" style="margin-bottom: 15px; border-bottom: 1px solid rgba(76, 175, 80, 0.12); padding-bottom: 10px;">
+                        <h2 style="font-size: 1.15rem; font-weight: 700; color: var(--primary-green);"><span>🌾</span> Agronomy & Advisory</h2>
+                    </div>
+
+                    <div class="section-sub-header">Fertilizer Suggestions / உர பரிந்துரைகள்:</div>
+                    <div id="ai-fertilizers" style="margin-bottom: 15px;">...</div>
+
+                    <div class="section-sub-header">Irrigation Advice / நீர் பாசன ஆலோசனை:</div>
+                    <div id="ai-irrigation" style="margin-bottom: 15px;">...</div>
+
+                    <div class="section-sub-header">Weather Impact / வானிலை தாக்கம்:</div>
+                    <div id="ai-weather-impact" style="margin-bottom: 15px;">...</div>
+
+                    <div class="section-sub-header">Expert Recommendations / நிபுணர் பரிந்துரைகள்:</div>
+                    <div id="ai-expert-recommendations" style="margin-bottom: 15px;">...</div>
+                </section>
+
+                <!-- Submission Summary -->
+                <section class="panel diagnostic-card">
+                    <div class="panel-header" style="margin-bottom: 15px; border-bottom: 1px solid rgba(76, 175, 80, 0.12); padding-bottom: 10px;">
+                        <h2 style="font-size: 1.15rem; font-weight: 700; color: var(--primary-green);"><span>📝</span> Submission Summary</h2>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-label">Farmer Profile</div>
+                        <div class="info-value" id="summary-farmer">Loading...</div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-label">Submitted Region</div>
+                        <div class="info-value" id="summary-region">Loading...</div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-label">Symptoms Submitted</div>
+                        <div class="info-value" id="summary-symptoms">Loading...</div>
+                    </div>
+                    <div class="info-row" style="border: none;">
+                        <div class="info-label">Status</div>
+                        <div class="info-value"><span class="badge badge-status-diagnosed" id="summary-status">DIAGNOSED</span></div>
+                    </div>
+                </section>
+
+            </div>
+
+            <!-- Right Panel: Image Display & Ask Expert Form -->
+            <div>
+                <!-- Crop Photo Uploaded -->
+                <section class="panel" style="text-align: center; margin-bottom: 25px; padding: 25px;">
+                    <div class="panel-header" style="margin-bottom: 15px;">
+                        <h2><span>📸</span> Submission Photograph</h2>
+                    </div>
+                    <img class="result-photo" id="result-photo-display" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='10' fill='%23F1F8E9'/><text x='50%25' y='65%25' font-size='40' text-anchor='middle'>🍂</text></svg>" alt="No image submitted" onerror="handleImageError(this, 'leaf')">
+                    <p class="hint" id="photo-hint" style="margin-top: 12px; font-size: 0.78rem; color: #757575;">No photo submitted with report.</p>
+                </section>
+
+                <!-- Ask Expert Consultation -->
+                <section class="panel" id="ask-expert-panel" style="padding: 25px;">
+                    <div class="panel-header" style="margin-bottom: 15px;">
+                        <h2><span>🩺</span> Consult Agronomist</h2>
+                    </div>
+                    <p style="font-size: 0.82rem; color: #616161; margin-bottom: 15px;">If you want to verify this diagnosis or get localized advice, submit a question to our expert agronomists:</p>
+                    
+                    <form id="consultation-form">
+                        <div class="form-group" style="margin-bottom: 15px;">
+                            <label for="consult-question" style="font-weight: 600; font-size: 0.85rem; display: block; margin-bottom: 5px;">Your Question</label>
+                            <textarea id="consult-question" class="form-control" placeholder="Explain your problem here (e.g. My crop leaves are wilting rapidly in the morning. Is this related to Late Blight?)" required style="width: 100%; min-height: 100px; padding: 10px; border-radius: 8px; border: 1px solid #CFD8DC; font-family: inherit; font-size: 0.9rem; resize: vertical; outline: none;"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary" style="width: 100%;">
+                            Submit Question to Expert ✉️
+                        </button>
+                    </form>
+                </section>
+
+                <!-- Consultation Answer Panel if already exists -->
+                <section class="panel" id="consultation-ticket-panel" style="display: none; padding: 25px;">
+                    <div class="panel-header" style="margin-bottom: 15px;">
+                        <h2><span>🩺</span> Consultation Status</h2>
+                    </div>
+                    <div id="consultation-ticket-content">
+                        <!-- Loaded dynamically -->
+                    </div>
+                </section>
+
+            </div>
+
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 AgriDoc Platform. Built with care for agricultural sustainability.</p>
+    </footer>
+
+    <script src="../js/api.js?v=2"></script>
+    <script src="../js/auth.js"></script>
+    <script>
+        let reportId = null;
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            reportId = urlParams.get('reportId');
+
+            if (!reportId) {
+                showAlert('Report ID is missing', 'danger');
+                setTimeout(() => window.location.href = 'farmer-dashboard.html', 1500);
+                return;
+            }
+
+            try {
+                // Fetch Report details
+                const report = await api.getReportById(reportId);
+                renderReportDetails(report);
+
+                // Fetch farmer consultations to see if there is an existing ticket for this report
+                const consultations = await api.getFarmerConsultations();
+                const matchedTicket = consultations.find(c => c.reportId == reportId);
+                
+                if (matchedTicket) {
+                    renderConsultationTicket(matchedTicket);
+                }
+
+            } catch (err) {
+                console.error('Failed to load report result page:', err);
+            }
+        });
+
+        let currentLanguageMode = 'both';
+
+        function setLanguageMode(mode) {
+            currentLanguageMode = mode;
+            ['both', 'en', 'ta'].forEach(m => {
+                const btn = document.getElementById(`lang-btn-${m}`);
+                if (btn) {
+                    if (m === mode) {
+                        btn.style.background = 'var(--primary-green)';
+                        btn.style.color = 'white';
+                        btn.style.borderColor = 'var(--primary-green)';
+                    } else {
+                        btn.style.background = '#ECEFF1';
+                        btn.style.color = 'var(--text-dark)';
+                        btn.style.borderColor = '#CFD8DC';
+                    }
+                }
+            });
+            if (window.currentReportObj) {
+                renderReportDetails(window.currentReportObj);
+            }
+        }
+        window.setLanguageMode = setLanguageMode;
+
+        function formatBilingualText(text) {
+            if (!text || !text.trim()) {
+                return '<p style="color: #757575; font-style: italic; font-size: 0.9rem;">Information recorded / விவரங்கள் பதிவு செய்யப்பட்டுள்ளன</p>';
+            }
+            const lines = text.split('\n');
+            let html = '';
+            for (let line of lines) {
+                const trimmed = line.trim();
+                if (!trimmed) continue;
+                const hasTamilChar = /[\u0B80-\u0BFF]/.test(trimmed);
+                if (hasTamilChar) {
+                    if (currentLanguageMode !== 'en') {
+                        html += `<div class="translation-block" style="margin-top: 6px; font-size: 0.92rem; color: #1B5E20; font-weight: 600; line-height: 1.5; border-left: 3px solid #4CAF50; padding-left: 10px; margin-bottom: 8px; background: #F1F8E9; padding-top: 4px; padding-bottom: 4px; border-radius: 0 6px 6px 0;">${trimmed}</div>`;
+                    }
+                } else {
+                    if (currentLanguageMode !== 'ta') {
+                        html += `<p style="margin: 0 0 6px 0; color: #2C3E50; font-size: 0.95rem; line-height: 1.5; font-weight: 500;">${trimmed}</p>`;
+                    }
+                }
+            }
+            if (!html.trim()) {
+                return `<p style="margin: 0; color: #2C3E50; font-size: 0.92rem; line-height: 1.5; font-weight: 500;">${text}</p>`;
+            }
+            return html;
+        }
+
+        function renderReportDetails(report) {
+            window.currentReportObj = report;
+            // Null-check fields
+            const diseaseName = report.predictedDiseaseName || 'Unknown / Undiagnosed Condition';
+            const severity = report.severityLevel || 'LOW';
+            const confidence = report.confidenceScore || 'N/A';
+
+            // Severity styling
+            const severityBadge = document.getElementById('predicted-severity-badge');
+            severityBadge.className = `badge badge-severity-${severity.toLowerCase()}`;
+            severityBadge.textContent = `Severity: ${severity}`;
+
+            // Confidence display
+            document.getElementById('predicted-confidence-badge').textContent = `Confidence: ${confidence}`;
+
+            // Image displaying
+            const photoDisplay = document.getElementById('result-photo-display');
+            const photoHint = document.getElementById('photo-hint');
+            if (report.imagePath) {
+                photoDisplay.src = report.imagePath.startsWith('data:') ? report.imagePath : `http://localhost:8080/${report.imagePath}`;
+                photoHint.textContent = report.imagePath.startsWith('data:') ? 'Uploaded Photo' : `Uploaded File: ${report.imagePath.substring(report.imagePath.lastIndexOf('/') + 1)}`;
+            } else {
+                photoDisplay.src = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='10' fill='%23F1F8E9'/><text x='50%25' y='65%25' font-size='40' text-anchor='middle'>🍂</text></svg>";
+                photoHint.textContent = 'No photo uploaded with this report.';
+            }
+
+            // Mappings
+            document.getElementById('predicted-disease-name').textContent = diseaseName;
+            document.getElementById('predicted-crop-relation').innerHTML = `Crop: <strong>${report.cropName}</strong>`;
+            
+            // Format dynamic bilingual AI results
+            document.getElementById('ai-symptoms').innerHTML = formatBilingualText(report.symptoms);
+            document.getElementById('ai-root-cause').innerHTML = formatBilingualText(report.rootCause);
+            document.getElementById('ai-recovery-time').innerHTML = formatBilingualText(report.expectedRecoveryTime);
+            
+            document.getElementById('ai-immediate-actions').innerHTML = formatBilingualText(report.immediateActions);
+            document.getElementById('ai-recommended-treatment').innerHTML = formatBilingualText(report.recommendedTreatment);
+            document.getElementById('ai-prevention-methods').innerHTML = formatBilingualText(report.preventionMethods);
+
+            document.getElementById('ai-fertilizers').innerHTML = formatBilingualText(report.fertilizerSuggestions);
+            document.getElementById('ai-irrigation').innerHTML = formatBilingualText(report.irrigationAdvice);
+            document.getElementById('ai-weather-impact').innerHTML = formatBilingualText(report.weatherImpact);
+            document.getElementById('ai-expert-recommendations').innerHTML = formatBilingualText(report.additionalExpertRecommendations);
+
+            document.getElementById('summary-farmer').textContent = report.farmerName || 'N/A';
+            document.getElementById('summary-region').textContent = report.farmerRegion || 'N/A';
+            document.getElementById('summary-symptoms').textContent = report.symptomsSubmitted || 'N/A';
+            
+            const statusEl = document.getElementById('summary-status');
+            statusEl.textContent = report.status;
+            statusEl.className = `badge badge-status-${report.status.toLowerCase().replace('_', '-')}`;
+        }
+
+        function renderConsultationTicket(ticket) {
+            document.getElementById('ask-expert-panel').style.display = 'none';
+            
+            const ticketPanel = document.getElementById('consultation-ticket-panel');
+            const ticketContent = document.getElementById('consultation-ticket-content');
+            
+            ticketPanel.style.display = 'block';
+
+            const statusClass = ticket.status === 'PENDING' ? 'badge-status-pending' : 'badge-status-resolved';
+            const ticketDate = new Date(ticket.createdAt).toLocaleDateString('en-US', {
+                month: 'short', day: 'numeric', year: 'numeric'
+            });
+
+            let responseMarkup = '';
+            if (ticket.status === 'ANSWERED' && ticket.expertResponse) {
+                const replyDate = new Date(ticket.repliedAt).toLocaleDateString('en-US', {
+                    month: 'short', day: 'numeric', year: 'numeric'
+                });
+                responseMarkup = `
+                    <div class="ticket-response" style="margin-top: 15px;">
+                        <div class="expert-tag">🩺 Expert Advice (Replied on ${replyDate}):</div>
+                        <p style="margin: 0; color: #37474F; font-size: 0.88rem;">${ticket.expertResponse}</p>
+                    </div>
+                `;
+            } else {
+                responseMarkup = `
+                    <div style="background: #FFF9C4; padding: 12px; border-radius: 8px; font-size: 0.82rem; color: #F57F17; margin-top: 15px; border-left: 4px solid var(--accent-yellow); font-weight: 500;">
+                        ⏳ Awaiting review by agronomist...
+                    </div>
+                `;
+            }
+
+            ticketContent.innerHTML = `
+                <div style="font-size: 0.85rem; color: #757575; display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                    <span>Ticket Date: ${ticketDate}</span>
+                    <span class="badge ${statusClass}">${ticket.status}</span>
+                </div>
+                <div style="font-size: 0.88rem; background: #FAFAFA; padding: 12px; border-radius: 8px; border: 1px solid #ECEFF1;">
+                    <strong style="color: var(--bg-dark);">Your Question:</strong> "${ticket.question}"
+                </div>
+                ${responseMarkup}
+            `;
+        }
+
+        // Consult form submit
+        document.getElementById('consultation-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const questionText = document.getElementById('consult-question').value.trim();
+
+            if (!questionText) {
+                showAlert('Question cannot be empty', 'warning');
+                return;
+            }
+
+            try {
+                const response = await api.createConsultation(reportId, questionText);
+                if (response && response.id) {
+                    showAlert('Consultation request filed successfully!', 'success');
+                    
+                    // Re-fetch consultations to update view
+                    const consultations = await api.getFarmerConsultations();
+                    const matchedTicket = consultations.find(c => c.reportId == reportId);
+                    if (matchedTicket) {
+                        renderConsultationTicket(matchedTicket);
+                    }
+                    
+                    // Update status in Summary
+                    const statusEl = document.getElementById('summary-status');
+                    statusEl.textContent = 'UNDER_REVIEW';
+                    statusEl.className = 'badge badge-status-review';
+                }
+            } catch (err) {
+                // api.js handles error banners
+            }
+        });
+    </script>
+</body>
+</html>

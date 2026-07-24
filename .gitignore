@@ -1,0 +1,17 @@
+# Logs
+*.log
+springboot_err.txt
+springboot_out.txt
+
+# Maven build output
+backend/target/
+**/target/
+
+# Uploaded files
+uploads/
+**/uploads/
+
+# IDE / OS specific files
+.vscode/
+.DS_Store
+Thumbs.db

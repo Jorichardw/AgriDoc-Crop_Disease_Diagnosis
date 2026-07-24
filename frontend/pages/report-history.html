@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Report History - AgriDoc</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/dashboard.css">
+    <link rel="stylesheet" href="../css/forms.css">
+    <style>
+        .filter-bar {
+            background-color: white;
+            padding: 20px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--card-shadow);
+            margin-bottom: 25px;
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .filter-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .filter-group label {
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: var(--bg-dark);
+        }
+        .filter-group select {
+            padding: 6px 12px;
+            border-radius: 8px;
+            border: 1px solid #CFD8DC;
+            font-family: inherit;
+            font-size: 0.85rem;
+            background-color: #FAFAFA;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <nav class="navbar">
+            <a href="farmer-dashboard.html" class="logo" style="display: flex; align-items: center; gap: 10px; text-decoration: none;">
+                <img src="../logo.png" alt="AgriDoc Logo" style="height: 34px; width: auto; border-radius: 4px;">
+                Agri<span>Doc</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="farmer-dashboard.html">Dashboard</a></li>
+                <li><a href="report-history.html" class="active">Report History</a></li>
+                <li><a href="forum.html">Community Forum</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="container page-fade-in">
+        <div style="margin-bottom: 25px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
+            <div>
+                <h1 style="color: var(--bg-dark); font-weight: 700;">📜 Diagnosis Report History</h1>
+                <p style="color: #616161;">Browse and filter your history of submitted crop reports, diagnostics, and advisories.</p>
+            </div>
+            <a href="farmer-dashboard.html" class="btn btn-primary">
+                New Diagnosis ➕
+            </a>
+        </div>
+
+        <!-- Filter Controls -->
+        <div class="filter-bar">
+            <div class="filter-group">
+                <label for="filter-crop">Filter by Crop:</label>
+                <select id="filter-crop">
+                    <option value="ALL">All Crops</option>
+                    <!-- Populate crops dynamically -->
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label for="filter-severity">Severity:</label>
+                <select id="filter-severity">
+                    <option value="ALL">All Severities</option>
+                    <option value="LOW">Low</option>
+                    <option value="MEDIUM">Medium</option>
+                    <option value="HIGH">High</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label for="filter-status">Report Status:</label>
+                <select id="filter-status">
+                    <option value="ALL">All Statuses</option>
+                    <option value="DIAGNOSED">Diagnosed</option>
+                    <option value="UNDER_REVIEW">Under Review</option>
+                    <option value="RESOLVED">Resolved</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Reports Feed -->
+        <section class="panel">
+            <div class="panel-header">
+                <h2><span>📂</span> Submitted Reports Feed</h2>
+            </div>
+            
+            <div class="history-list" id="history-feed-container">
+                <!-- Rendered dynamically -->
+                <p style="text-align: center; color: #757575;">Loading diagnosis records...</p>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 AgriDoc Platform. Built with care for agricultural sustainability.</p>
+    </footer>
+
+    <script src="../js/api.js?v=2"></script>
+    <script src="../js/auth.js"></script>
+    <script>
+        let allReports = [];
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                // Fetch reports and crops lists
+                const [reports, crops] = await Promise.all([
+                    api.getFarmerReports(),
+                    api.getCrops()
+                ]);
+
+                allReports = reports;
+                
+                // Populate crop filter dropdown
+                populateCropDropdown(crops);
+
+                // Initial render of history feed
+                renderHistoryFeed(reports);
+
+                // Set up event listeners for filters
+                document.getElementById('filter-crop').addEventListener('change', filterReports);
+                document.getElementById('filter-severity').addEventListener('change', filterReports);
+                document.getElementById('filter-status').addEventListener('change', filterReports);
+
+            } catch (err) {
+                console.error('Failed to load history workspace:', err);
+            }
+        });
+
+        function populateCropDropdown(crops) {
+            const dropdown = document.getElementById('filter-crop');
+            crops.forEach(crop => {
+                const opt = document.createElement('option');
+                opt.value = crop.name;
+                opt.textContent = crop.name;
+                dropdown.appendChild(opt);
+            });
+        }
+
+        function renderHistoryFeed(reports) {
+            const container = document.getElementById('history-feed-container');
+            if (!container) return;
+
+            if (!reports || reports.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 40px;">
+                        <p style="color: #757575; font-size: 0.92rem;">No matching diagnoses records found in history.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = reports.map(report => {
+                const dateStr = new Date(report.createdAt).toLocaleDateString('en-US', {
+                    month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit'
+                });
+
+                const severityClass = `badge-severity-${(report.severityLevel || 'LOW').toLowerCase()}`;
+                const statusClass = `badge-status-${report.status.toLowerCase().replace('_', '-')}`;
+                const fallbackSvg = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='10' fill='%23F1F8E9'/><text x='50%25' y='65%25' font-size='40' text-anchor='middle'>🍂</text></svg>";
+                const imageSrc = report.imagePath ? (report.imagePath.startsWith('data:') ? report.imagePath : `http://localhost:8080/${report.imagePath}`) : fallbackSvg;
+
+                return `
+                    <div class="history-item">
+                        <div class="history-main">
+                            <img class="history-img" src="${imageSrc}" alt="Report Photo" onerror="handleImageError(this, 'leaf')">
+                            <div class="history-details">
+                                <h4 style="font-size: 1rem; color: var(--bg-dark);">${report.cropName} - <span style="font-weight: 500;">${report.predictedDiseaseName}</span></h4>
+                                <p style="font-size: 0.8rem; margin: 4px 0;">📂 Submitted symptoms: <code style="background: #ECEFF1; padding: 2px 6px; border-radius: 4px;">${report.symptomsSubmitted}</code></p>
+                                <p style="font-size: 0.75rem; color: #90A4AE;">📅 Diagnosed: ${dateStr}</p>
+                            </div>
+                        </div>
+                        <div class="history-meta">
+                            <span class="badge ${severityClass}">Severity: ${report.severityLevel || 'LOW'}</span>
+                            <span class="badge ${statusClass}">${report.status.replace('_', ' ')}</span>
+                            <a href="diagnosis-result.html?reportId=${report.id}" class="btn btn-secondary">
+                                Details 🔬
+                            </a>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function filterReports() {
+            const cropVal = document.getElementById('filter-crop').value;
+            const severityVal = document.getElementById('filter-severity').value;
+            const statusVal = document.getElementById('filter-status').value;
+
+            let filtered = allReports;
+
+            if (cropVal !== 'ALL') {
+                filtered = filtered.filter(r => r.cropName === cropVal);
+            }
+
+            if (severityVal !== 'ALL') {
+                filtered = filtered.filter(r => (r.severityLevel || 'LOW') === severityVal);
+            }
+
+            if (statusVal !== 'ALL') {
+                filtered = filtered.filter(r => r.status === statusVal);
+            }
+
+            renderHistoryFeed(filtered);
+        }
+    </script>
+</body>
+</html>
