@@ -209,16 +209,35 @@
             }
         }
 
+        const TAMIL_MAP = {
+            'apple': 'ஆப்பிள்', 'banana': 'வாழை', 'chilli': 'மிளகாய்', 'coconut': 'தேங்காய்',
+            'coffee': 'காபி', 'corn': 'சோளம்', 'cotton': 'பருத்தி', 'ginger': 'இஞ்சி',
+            'grapes': 'திராட்சை', 'groundnut': 'நிலக்கடலை', 'mango': 'மாம்பழம்', 'onion': 'வெங்காயம்',
+            'papaya': 'பப்பாளி', 'potato': 'உருளைக்கிழங்கு', 'rice': 'நெல் / அரிசி', 'soybeans': 'சோயா பீன்ஸ்',
+            'sugarcane': 'கரும்பு', 'tomato': 'தக்காளி', 'turmeric': 'மஞ்சள்', 'wheat': 'கோதுமை',
+            'brinjal': 'கத்தரிக்காய்', 'bitter gourd': 'பாகற்காய்', 'bottle gourd': 'சுரைக்காய்',
+            'cardamom': 'ஏலக்காய்', 'cassava': 'மரவள்ளி', 'cauliflower': 'காலிஃப்ளவர்',
+            'drumstick': 'முருங்கை', 'garlic': 'பூண்டு', 'guava': 'கொய்யா', "lady's finger": 'வெண்டைக்காய்',
+            'lemon': 'எலுமிச்சை', 'pineapple': 'அன்னாசி', 'pomegranate': 'மாதுளை', 'sesame': 'எள்',
+            'watermelon': 'தர்பூசணி'
+        };
+
+        function formatBilingualCropName(rawName) {
+            if (!rawName) return '';
+            const parts = rawName.split(' (');
+            const eng = parts[0].trim();
+            const key = eng.toLowerCase();
+            if (TAMIL_MAP[key]) return `${eng} (${TAMIL_MAP[key]})`;
+            if (parts[1] && !parts[1].includes('?')) return rawName;
+            return eng;
+        }
+
         function renderTicketsFeed(tickets) {
             const container = document.getElementById('tickets-feed-container');
             if (!container) return;
 
             if (!tickets || tickets.length === 0) {
-                container.innerHTML = `
-                    <div style="text-align: center; padding: 40px; color: #757575; font-size: 0.9rem;">
-                        🎉 All caught up! No pending consultations.
-                    </div>
-                `;
+                container.innerHTML = `<p style="color: #757575; font-size: 0.9rem; text-align: center; padding: 20px;">No pending farmer tickets.</p>`;
                 return;
             }
 
@@ -228,10 +247,12 @@
                     month: 'short', day: 'numeric'
                 });
 
+                const displayCrop = formatBilingualCropName(ticket.report && ticket.report.crop ? ticket.report.crop.name : '');
+
                 return `
                     <div class="ticket-item-row ${isSelected ? 'active' : ''}" onclick="selectTicket(${ticket.id})">
                         <div style="display: flex; justify-content: space-between; align-items: center;">
-                            <h4>Ticket #${ticket.id} - ${ticket.report.crop.name}</h4>
+                            <h4>Ticket #${ticket.id} - ${displayCrop}</h4>
                             <span style="font-size: 0.72rem; color: #9E9E9E;">${formattedDate}</span>
                         </div>
                         <p>👤 Farmer: ${ticket.farmer.fullName} (${ticket.farmer.region})</p>
@@ -255,8 +276,8 @@
             const activeView = document.getElementById('workspace-active-view');
             activeView.style.display = 'block';
 
-            // Populate active details
-            document.getElementById('ws-ticket-title').textContent = `${ticket.report.crop.name} - Ticket #${ticket.id}`;
+            const wsCropName = formatBilingualCropName(ticket.report.crop ? ticket.report.crop.name : '');
+            document.getElementById('ws-ticket-title').textContent = `${wsCropName} - Ticket #${ticket.id}`;
             document.getElementById('ws-ticket-meta').innerHTML = `
                 👤 Farmer: <strong>${ticket.farmer.fullName}</strong> | Region: <strong>${ticket.farmer.region}</strong> | Phone: <strong>${ticket.farmer.phone}</strong>
             `;

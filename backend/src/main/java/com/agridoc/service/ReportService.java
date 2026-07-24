@@ -173,7 +173,7 @@ public class ReportService {
                 .farmerRegion(report.getFarmer().getRegion())
                 .farmerPhone(report.getFarmer().getPhone())
                 .cropId(report.getCrop().getId())
-                .cropName(report.getCrop().getName())
+                .cropName(CropService.getBilingualName(report.getCrop().getName()))
                 .symptomsSubmitted(report.getSymptomsSubmitted())
                 .imagePath(report.getImagePath())
                 .status(report.getStatus())

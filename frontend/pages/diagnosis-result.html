@@ -368,9 +368,34 @@
                 photoHint.textContent = 'No photo uploaded with this report.';
             }
 
+            const TAMIL_CROP_MAP = {
+                'apple': 'ஆப்பிள்', 'banana': 'வாழை', 'chilli': 'மிளகாய்', 'coconut': 'தேங்காய்',
+                'coffee': 'காபி', 'corn': 'சோளம்', 'cotton': 'பருத்தி', 'ginger': 'இஞ்சி',
+                'grapes': 'திராட்சை', 'groundnut': 'நிலக்கடலை', 'mango': 'மாம்பழம்', 'onion': 'வெங்காயம்',
+                'papaya': 'பப்பாளி', 'potato': 'உருளைக்கிழங்கு', 'rice': 'நெல் / அரிசி', 'soybeans': 'சோயா பீன்ஸ்',
+                'sugarcane': 'கரும்பு', 'tomato': 'தக்காளி', 'turmeric': 'மஞ்சள்', 'wheat': 'கோதுமை',
+                'brinjal': 'கத்தரிக்காய்', 'bitter gourd': 'பாகற்காய்', 'bottle gourd': 'சுரைக்காய்',
+                'cardamom': 'ஏலக்காய்', 'cassava': 'மரவள்ளி', 'cauliflower': 'காலிஃப்ளவர்',
+                'drumstick': 'முருங்கை', 'garlic': 'பூண்டு', 'guava': 'கொய்யா', "lady's finger": 'வெண்டைக்காய்',
+                'lemon': 'எலுமிச்சை', 'pineapple': 'அன்னாசி', 'pomegranate': 'மாதுளை', 'sesame': 'எள்',
+                'watermelon': 'தர்பூசணி'
+            };
+
+            function formatBilingualCropName(rawName) {
+                if (!rawName) return '';
+                const parts = rawName.split(' (');
+                const eng = parts[0].trim();
+                const key = eng.toLowerCase();
+                if (TAMIL_CROP_MAP[key]) return `${eng} (${TAMIL_CROP_MAP[key]})`;
+                if (parts[1] && !parts[1].includes('?')) return rawName;
+                return eng;
+            }
+
+            const cleanCropName = formatBilingualCropName(report.cropName);
+
             // Mappings
             document.getElementById('predicted-disease-name').textContent = diseaseName;
-            document.getElementById('predicted-crop-relation').innerHTML = `Crop: <strong>${report.cropName}</strong>`;
+            document.getElementById('predicted-crop-relation').innerHTML = `Crop: <strong>${cleanCropName}</strong>`;
             
             // Format dynamic bilingual AI results
             document.getElementById('ai-symptoms').innerHTML = formatBilingualText(report.symptoms);

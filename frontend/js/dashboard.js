@@ -221,10 +221,14 @@ function renderCropGrid(crops) {
         const nameParts = crop.name.split(' (');
         const englishName = nameParts[0].trim();
         const key = getCropKey(crop.name);
-        let tamilName = nameParts[1] ? nameParts[1].replace(')', '').trim() : '';
-        if (!tamilName && TAMIL_CROP_NAMES[key]) {
-            tamilName = TAMIL_CROP_NAMES[key];
+        let tamilName = TAMIL_CROP_NAMES[key];
+        if (!tamilName && nameParts[1]) {
+            const extracted = nameParts[1].replace(')', '').trim();
+            if (!extracted.includes('?')) {
+                tamilName = extracted;
+            }
         }
+        if (!tamilName) tamilName = '';
 
         const directImg = DIRECT_CROP_IMAGES[key] || FALLBACK_SVG;
 
@@ -264,6 +268,21 @@ function renderRecentReports(reports) {
 
     const recentReports = reports.slice(0, 4);
 
+function formatBilingualCropName(rawName) {
+    if (!rawName) return '';
+    const nameParts = rawName.split(' (');
+    const englishName = nameParts[0].trim();
+    const key = englishName.toLowerCase();
+    const tamilName = TAMIL_CROP_NAMES[key];
+    if (tamilName) {
+        return `${englishName} (${tamilName})`;
+    }
+    if (nameParts[1] && !nameParts[1].includes('?')) {
+        return rawName;
+    }
+    return englishName;
+}
+
     historyContainer.innerHTML = recentReports.map(report => {
         const dateStr = new Date(report.createdAt).toLocaleDateString('en-US', {
             month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit'
@@ -277,13 +296,14 @@ function renderRecentReports(reports) {
 
         const fallbackSvg = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='10' fill='%23F1F8E9'/><text x='50%25' y='65%25' font-size='40' text-anchor='middle'>🍂</text></svg>";
         const imageSrc = report.imagePath ? (report.imagePath.startsWith('data:') ? report.imagePath : `http://localhost:8080/${report.imagePath}`) : fallbackSvg;
+        const displayCropName = formatBilingualCropName(report.cropName);
 
         return `
             <div class="history-item">
                 <div class="history-main">
                     <img class="history-img" src="${imageSrc}" alt="Report Photo" onerror="handleImageError(this, 'leaf')">
                     <div class="history-details">
-                        <h4>${report.cropName} - <span style="font-weight: 500;">${report.predictedDiseaseName}</span></h4>
+                        <h4>${displayCropName} - <span style="font-weight: 500;">${report.predictedDiseaseName}</span></h4>
                         <p>📅 Diagnosed on: ${dateStr}</p>
                     </div>
                 </div>
@@ -338,10 +358,12 @@ function renderConsultations(consultations) {
             `;
         }
 
+        const displayCropName = formatBilingualCropName(ticket.report.crop ? ticket.report.crop.name : '');
+
         return `
             <div class="ticket-card">
                 <div class="ticket-header">
-                    <h4>Report ID: #${ticket.report.id} - ${ticket.report.crop.name}</h4>
+                    <h4>Report ID: #${ticket.report.id} - ${displayCropName}</h4>
                     <div>
                         <span class="badge ${statusClass}">${ticket.status}</span>
                         <span style="font-size: 0.75rem; color: #9E9E9E; margin-left: 8px;">${ticketDate}</span>

@@ -45,11 +45,34 @@ function renderCropInfo(crop) {
     const cropTitleEl = document.getElementById('diagnose-page-title');
 
     const nameParts = crop.name.split(' (');
-    const englishName = nameParts[0];
-    const tamilName = nameParts[1] ? nameParts[1].replace(')', '') : '';
+    const englishName = nameParts[0].trim();
+    const key = englishName.toLowerCase();
+    
+    const TAMIL_MAP = {
+        'apple': 'ஆப்பிள்', 'banana': 'வாழை', 'chilli': 'மிளகாய்', 'coconut': 'தேங்காய்',
+        'coffee': 'காபி', 'corn': 'சோளம்', 'cotton': 'பருத்தி', 'ginger': 'இஞ்சி',
+        'grapes': 'திராட்சை', 'groundnut': 'நிலக்கடலை', 'mango': 'மாம்பழம்', 'onion': 'வெங்காயம்',
+        'papaya': 'பப்பாளி', 'potato': 'உருளைக்கிழங்கு', 'rice': 'நெல் / அரிசி', 'soybeans': 'சோயா பீன்ஸ்',
+        'sugarcane': 'கரும்பு', 'tomato': 'தக்காளி', 'turmeric': 'மஞ்சள்', 'wheat': 'கோதுமை',
+        'brinjal': 'கத்தரிக்காய்', 'bitter gourd': 'பாகற்காய்', 'bottle gourd': 'சுரைக்காய்',
+        'cardamom': 'ஏலக்காய்', 'cassava': 'மரவள்ளி', 'cauliflower': 'காலிஃப்ளவர்',
+        'drumstick': 'முருங்கை', 'garlic': 'பூண்டு', 'guava': 'கொய்யா', "lady's finger": 'வெண்டைக்காய்',
+        'lemon': 'எலுமிச்சை', 'pineapple': 'அன்னாசி', 'pomegranate': 'மாதுளை', 'sesame': 'எள்',
+        'watermelon': 'தர்பூசணி'
+    };
 
-    if (cropTitleEl) cropTitleEl.innerHTML = `🧬 Diagnose: <strong>${englishName}</strong> <span style="font-size: 1.1rem; color: var(--primary-green); font-weight: 500;">(${tamilName})</span>`;
-    if (cropNameEl) cropNameEl.innerHTML = `${englishName} <span style="font-weight: 500; font-size: 0.9rem; color: var(--primary-green);">(${tamilName})</span>`;
+    let tamilName = TAMIL_MAP[key];
+    if (!tamilName && nameParts[1]) {
+        const extracted = nameParts[1].replace(')', '').trim();
+        if (!extracted.includes('?')) {
+            tamilName = extracted;
+        }
+    }
+    const tamilBadge = tamilName ? `<span style="font-size: 1.1rem; color: var(--primary-green); font-weight: 500;">(${tamilName})</span>` : '';
+    const tamilSubBadge = tamilName ? `<span style="font-weight: 500; font-size: 0.9rem; color: var(--primary-green);">(${tamilName})</span>` : '';
+
+    if (cropTitleEl) cropTitleEl.innerHTML = `🧬 Diagnose: <strong>${englishName}</strong> ${tamilBadge}`;
+    if (cropNameEl) cropNameEl.innerHTML = `${englishName} ${tamilSubBadge}`;
     if (cropDescEl) cropDescEl.textContent = crop.description || 'Staple crop disease inspector.';
 }
 
@@ -279,17 +302,17 @@ function setupFormSubmit(cropId) {
         const symptomsText = '';
 
         try {
+            toggleSpinner(true);
             // Upload to backend API
             const response = await api.createReport(cropId, symptomsText, selectedFile);
             if (response && response.id) {
                 // Stop camera stream if active
                 stopCamera();
-                showAlert('Diagnosis complete!', 'success');
-                setTimeout(() => {
-                    window.location.href = `diagnosis-result.html?reportId=${response.id}`;
-                }, 1000);
+                // Immediately navigate to full pathology result page
+                window.location.href = `diagnosis-result.html?reportId=${response.id}`;
             }
         } catch (error) {
+            toggleSpinner(false);
             // api.js handles alert overlay automatically
         }
     });
