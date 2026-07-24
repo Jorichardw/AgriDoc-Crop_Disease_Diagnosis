@@ -2,13 +2,6 @@
 CREATE DATABASE IF NOT EXISTS agridoc;
 USE agridoc;
 
--- Drop tables in correct order of dependency
-DROP TABLE IF EXISTS forum_posts;
-DROP TABLE IF EXISTS consultations;
-DROP TABLE IF EXISTS reports;
-DROP TABLE IF EXISTS crops;
-DROP TABLE IF EXISTS users;
-
 -- 1. Users Table
 CREATE TABLE users (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
@@ -89,8 +82,7 @@ CREATE TABLE forum_posts (
 -- SEED DATA
 -- =========================================================================
 
--- Seed default admin account (password is 'admin123' BCrypt hashed)
--- Password BCrypt: $2a$10$tM2MDRPjP32yWq.c6Ujfeee3zO/8x1R.P1eZ5C1P6.w6Wz/GvU3.a
+-- Seed default admin account (password is 'admin123' BCrypt hashed)a
 INSERT INTO users (username, password, email, phone, region, role, full_name) 
 VALUES ('admin', '$2a$10$tM2MDRPjP32yWq.c6Ujfeee3zO/8x1R.P1eZ5C1P6.w6Wz/GvU3.a', 'admin@agridoc.com', '+1234567890', 'Central Region', 'ADMIN', 'AgriDoc Administrator');
 
