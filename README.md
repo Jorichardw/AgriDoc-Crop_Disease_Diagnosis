@@ -2,39 +2,35 @@
 
 **AgriDoc** is an AI-powered agricultural pathology platform designed to help farmers diagnose crop diseases, obtain treatment guidelines in **English & Tamil**, track report histories, and consult with agricultural experts.
 
----
+🚀 Key Features :
 
-## 🚀 Key Features
+**AI Disease Pathology Engine**: Instant crop disease diagnosis using computer vision and pathology knowledge (Severity, Root Cause, Immediate Actions, Treatment, Prevention, Fertilizer & Irrigation Advice, Recovery Time).
+- 35+ Supported Crops**: Complete bilingual support in **English & Tamil** (e.g., `Rice (நெல் / அரிசி)`, `Tomato (தக்காளி)`).
+- Multi-Mode Image Input**: Drag-and-drop file upload or live camera photo capture.
+- Bilingual Interface**: Seamless toggle between **Both (English & தமிழ்)**, **English Only**, or **தமிழ் மட்டும்** for advisory reports.
+- Farmer Dashboard**: Quick access to crop diagnostics, recent report history, and expert advisory tickets.
+- Expert Advisory Workspace**: Connect farmers with agricultural experts to ask follow-up questions on diagnosed crop reports.
+  
+  (Premium features)
+- Community Forum**: Farmers and experts can share local disease outbreak warnings, crop management tips, and general farming advice.
+- Role-Based Security**: Secured with **Spring Security & JWT Authentication** for `FARMER`, `EXPERT`, and `ADMIN` roles.
 
-- 🧬 **AI Disease Pathology Engine**: Instant crop disease diagnosis using computer vision and pathology knowledge (Severity, Root Cause, Immediate Actions, Treatment, Prevention, Fertilizer & Irrigation Advice, Recovery Time).
-- 🌾 **35+ Supported Crops**: Complete bilingual support in **English & Tamil** (e.g., `Rice (நெல் / அரிசி)`, `Tomato (தக்காளி)`, `Banana (வாழை)`, `Groundnut (நிலக்கடலை)`, `Potato (உருளைக்கிழங்கு)`).
-- 📸 **Multi-Mode Image Input**: Drag-and-drop file upload or live camera photo capture.
-- 🌐 **Bilingual Interface**: Seamless toggle between **Both (English & தமிழ்)**, **English Only**, or **தமிழ் மட்டும்** for advisory reports.
-- 📋 **Farmer Dashboard**: Quick access to crop diagnostics, recent report history, and expert advisory tickets.
-- 🩺 **Expert Advisory Workspace**: Connect farmers with agricultural experts to ask follow-up questions on diagnosed crop reports.
-- 💬 **Community Forum**: Farmers and experts can share local disease outbreak warnings, crop management tips, and general farming advice.
-- 🛡️ **Role-Based Security**: Secured with **Spring Security & JWT Authentication** for `FARMER`, `EXPERT`, and `ADMIN` roles.
+🛠️ Technology Stack :
 
----
-
-## 🛠️ Technology Stack
-
-### **Backend**
+**Backend**
 - **Language**: Java 21
 - **Framework**: Spring Boot 3.x (Spring Web, Spring Security, Spring Data JPA)
 - **Database**: MySQL 8.0+ (`utf8mb4` character set)
 - **Security**: JWT (JSON Web Tokens) & BCrypt password hashing
 - **AI Integration**: Google Gemini API & Embedded Plant Pathology Engine
 
-### **Frontend**
+**Frontend**
 - **Structure & Logic**: HTML5, Vanilla JavaScript (ES6+, Fetch API, HTML5 Media Capture API)
 - **Styling**: Vanilla CSS3 (Responsive grid, custom design system, glassmorphism UI)
 
----
+📁 Project Architecture :
 
-## 📁 Project Architecture
-
-```text
+```
 AgriDoc/
 ├── backend/
 │   ├── src/main/java/com/agridoc/
@@ -58,19 +54,15 @@ AgriDoc/
 └── README.md
 ```
 
----
+⚙️ Setup & Installation Instructions
 
-## ⚙️ Setup & Installation Instructions
-
-### 1. **Prerequisites**
+1. **Prerequisites**
 - **Java JDK 21** or higher
 - **Maven 3.8+**
 - **MySQL Server 8.0+**
 - Modern Web Browser (Chrome, Edge, Firefox)
 
----
-
-### 2. **Database Configuration**
+2. **Database Configuration**
 
 1. Start your MySQL Server.
 2. Open your MySQL client or workbench and execute `database/schema.sql`:
@@ -82,9 +74,7 @@ AgriDoc/
    SOURCE database/fix_crops_utf8.sql;
    ```
 
----
-
-### 3. **Backend Setup (Spring Boot)**
+3. **Backend Setup (Spring Boot)** :
 
 1. Navigate to the `backend/` directory:
    ```bash
@@ -102,9 +92,7 @@ AgriDoc/
    ```
    The backend server will start at `http://localhost:8080`.
 
----
-
-### 4. **Frontend Setup**
+4. **Frontend Setup**
 
 1. Open `frontend/index.html` in your web browser or use VS Code **Live Server** (port 5500 / 8080).
 2. Default Administrator Account:
@@ -114,6 +102,6 @@ AgriDoc/
 
 ---
 
-## 📄 License & Attribution
+📄 License & Attribution
 
 Developed with care for agricultural sustainability and empowering farmers with AI pathology solutions.
